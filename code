@@ -1,0 +1,82 @@
+/*
+  Automated Waste Sorting Smart Dustbin
+  Mechanism: Waste is placed on a center platform. 
+  PIR detects the user, Moisture sensor reads the waste, and Servo tilts left/right to sort.
+*/
+
+#include <Servo.h>
+
+// --- Pin Definitions ---
+const int pirPin = 2;         
+const int servoPin = 9;       
+const int moisturePin = A0;   
+
+// --- Variables & Settings ---
+Servo sortingServo;
+int pirState = LOW;           
+int moistureValue = 0;        
+
+// Moisture threshold (Adjust based on your sensor)
+// Lower values usually mean wetter.
+const int moistureThreshold = 600; 
+
+// Servo Angles for sorting mechanism
+const int posNeutral = 90;  // Flat position to hold the waste
+const int posWet = 0;       // Tilt angle for Wet compartment
+const int posDry = 180;     // Tilt angle for Dry compartment
+
+void setup() {
+  Serial.begin(9600);
+
+  pinMode(pirPin, INPUT);
+  
+  // Attach servo and set to flat holding position
+  sortingServo.attach(servoPin);
+  sortingServo.write(posNeutral); 
+  
+  Serial.println("Waste Sorting System Initialized.");
+  Serial.println("Platform is flat. Waiting for waste...");
+}
+
+void loop() {
+  // --- 1. Detect user placing waste ---
+  pirState = digitalRead(pirPin);
+  
+  if (pirState == HIGH) {
+    Serial.println("User detected! Waiting 2 seconds for hands to clear...");
+    
+    // Give the user time to remove their hand and let the waste settle on the sensor
+    delay(2000); 
+    
+    // --- 2. Read Moisture ---
+    moistureValue = analogRead(moisturePin);
+    Serial.print("Moisture Reading: ");
+    Serial.print(moistureValue);
+    
+    // --- 3. Sort the Waste ---
+    if (moistureValue < moistureThreshold) {
+      // WET WASTE LOGIC
+      Serial.println(" -> WET WASTE detected.");
+      Serial.println("Tilting to Wet compartment...");
+      
+      sortingServo.write(posWet); // Tilt to drop waste
+      delay(3000);                // Wait 3 seconds to ensure waste slides off
+      
+    } else {
+      // DRY WASTE LOGIC
+      Serial.println(" -> DRY WASTE detected.");
+      Serial.println("Tilting to Dry compartment...");
+      
+      sortingServo.write(posDry); // Tilt to drop waste
+      delay(3000);                // Wait 3 seconds to ensure waste slides off
+    }
+    
+    // --- 4. Reset Platform ---
+    Serial.println("Resetting platform to neutral...");
+    sortingServo.write(posNeutral); 
+    
+    // Wait a moment before allowing the next scan
+    delay(2000); 
+    Serial.println("Ready for next item.");
+  }
+}
