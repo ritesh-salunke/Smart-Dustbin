@@ -1,43 +1,38 @@
-# Smart Dustbin using Arduino Uno 🗑️🤖
+# Automated Wet/Dry Waste Sorting Smart Dustbin 🗑️♻️
 
-An Arduino-based smart dustbin featuring a touchless motion-activated lid and a moisture sensor for automatic wet/dry waste segregation.
+An Arduino-based smart sorting dustbin that automatically classifies and segregates waste into two separate compartments (Wet and Dry) using a moisture sensor and a motorized tilting platform.
 
 ## Description
 
-This project is an automated, touchless Smart Dustbin built using an Arduino Uno. It is designed to improve hygiene and automate waste segregation at the source. 
-
-The system relies on two main sensors:
-* **PIR Motion Sensor:** Detects a person's presence and automatically opens the bin lid using a servo motor, allowing for a completely hands-free experience.
-* **Soil Moisture Sensor:** Evaluates the waste deposited into the bin to classify it as either "Wet" or "Dry" waste, paving the way for easier recycling and automated waste management. 
+This project automates waste segregation at the source. Instead of a traditional lid, the top of the dustbin consists of a resting platform. When a user places trash on this platform, the system triggers a sorting sequence:
+1. **Detection:** A PIR Motion Sensor detects the user's hand placing the trash.
+2. **Classification:** A Soil Moisture Sensor embedded in the platform evaluates the waste to determine if it is "Wet" or "Dry".
+3. **Segregation:** A Servo Motor tilts the platform left or right, dropping the waste into the corresponding Wet or Dry compartment below.
 
 ---
 
 ## Features
 
-* **Touchless Operation:** Opens automatically when a hand or object is waved in front of it.
-* **Waste Classification:** Detects the moisture level of the waste to determine if it is wet or dry.
-* **Auto-Closing:** The lid closes automatically after a set delay.
-* **Serial Monitoring:** Outputs real-time moisture data and waste classification to the Arduino Serial Monitor.
+* **Auto-Sorting Mechanism:** Motorized flap that routes garbage into two distinct bins.
+* **Moisture-Based Classification:** Instantly detects the water content of the waste.
+* **Touchless Trigger:** Uses a PIR motion sensor to initiate the scanning and sorting process once the user steps away.
+* **Serial Monitoring:** Real-time moisture data and sorting logs via the Arduino Serial Monitor.
 
 ---
 
 ## Hardware Components
 
-To build this project, you will need the following components:
-
 * 1x Arduino Uno R3
 * 1x PIR Motion Sensor
 * 1x Soil Moisture Sensor
-* 1x Servo Motor (SG90 for small bins, MG995 for larger/heavier lids)
-* Jumper Wires (Male-to-Male, Male-to-Female)
+* 1x Servo Motor (MG995 recommended for torque to hold and drop waste)
+* Jumper Wires
 * 1x Breadboard
-* Power Supply / Battery (for the Arduino)
+* Power Supply
 
 ---
 
 ## Circuit Connections
-
-Make the connections between your components and the Arduino Uno as follows:
 
 | Component | Pin | Arduino Uno Pin |
 | :--- | :--- | :--- |
@@ -51,47 +46,15 @@ Make the connections between your components and the Arduino Uno as follows:
 | | Signal (Yellow/Orange)| Digital Pin 9 |
 | | GND (Brown/Black) | GND |
 
-> **Note:** If your servo motor is jittery or drawing too much power, consider powering it with an external 5V power supply rather than directly from the Arduino 5V pin. Ensure all ground (GND) pins share a common connection.
+> **Note on Servo Power:** Because the servo must hold the weight of the garbage on the platform, it is highly recommended to power the servo with an external 5V power supply rather than the Arduino to prevent the board from resetting. Connect the ground (GND) of the external power supply to the Arduino GND.
 
 ---
 
-## Software & Prerequisites
+## How to Use
 
-* **Arduino IDE:** You will need the [Arduino IDE](https://www.arduino.cc/en/software) installed on your computer to upload the code.
-* **Servo Library:** The code utilizes the standard `<Servo.h>` library, which comes pre-installed with the Arduino IDE.
-
----
-
-## Installation & Setup
-
-1. **Clone the Repository:**
-   Download or clone this repository to your local machine using:
-   `git clone https://github.com/YourUsername/Smart-Dustbin.git`
-
-2. **Assemble the Hardware:**
-   Connect the PIR sensor, moisture sensor, and servo motor to the Arduino according to the circuit connections table above.
-
-3. **Upload the Code:**
-   * Open `Smart_Dustbin.ino` in the Arduino IDE.
-   * Select your board (**Tools > Board > Arduino Uno**).
-   * Select the correct port (**Tools > Port**).
-   * Click the **Upload** button.
-
-4. **Test the System:**
-   * Open the **Serial Monitor** (set baud rate to 9600).
-   * Wave your hand in front of the PIR sensor; the servo should actuate to open the lid.
-   * Touch the moisture sensor with a damp cloth to see the moisture levels change on the Serial Monitor.
-
----
-
-## Future Improvements
-
-* Add an LCD/OLED display to visually indicate "Wet Waste" or "Dry Waste".
-* Add an Ultrasonic Sensor to measure how full the bin is and alert the user when it needs to be emptied.
-* Implement an ESP8266/ESP32 Wi-Fi module to send IoT alerts to a smartphone when the bin is full.
-
----
-
-## License
-
-This project is open-source and available under the [MIT License](LICENSE).
+1. Upload the `Smart_Dustbin.ino` code to your Arduino Uno.
+2. Open the Serial Monitor (9600 baud).
+3. Place waste on the center platform. The PIR sensor will detect your movement.
+4. Remove your hand. The system waits 2 seconds for the waste to settle.
+5. The moisture sensor reads the data.
+6. The servo tilts to **0° for Wet Waste** or **180° for Dry Waste**, dropping the trash into the correct bin, then returns to the **90° neutral position**.
